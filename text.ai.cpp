@@ -1,6 +1,6 @@
 #include <iostream>
 #include <windows.h>
-
+#include <iomanip>
 using namespace std;
 
 char separator[] = "!, ?.-";
@@ -13,6 +13,7 @@ int getSelection(string text, char word1[], char word2[], char word3[], int ptr)
 int strLen(string str);
 int strCmp(char s1[], char s2[]);
 bool isMatch(string text, char fragmentWord1[], char fragmentWord2[], char fragmentWord3[]);
+void lowerCase(char word[]);
 
 int main()
 {
@@ -24,7 +25,7 @@ int main()
 	
 	cout << endl << "TEXT:" << endl;
 	cout << text << endl;
-	cout << antiPlagiarism(text, fragment);
+	cout << "Originality: " << setprecision(4) << antiPlagiarism(text, fragment) << "%";
 }
 
 double antiPlagiarism(string text, string fragment)
@@ -86,9 +87,8 @@ bool isMatch(string text, char fragmentWord1[], char fragmentWord2[], char fragm
 	do{
 		ptr = getSelection(text, word1, word2, word3, ptr);
 		if(strCmp(word1, fragmentWord1) == 0 and strCmp(word2, fragmentWord2) == 0 and strCmp(word3, fragmentWord3) == 0){
-			cout << fragmentWord1 << "*" << fragmentWord2 << "*" << fragmentWord3 << endl;
-			cout << word1 << "*" << word2 << "*" << word3 << endl;                                                             
-			cout << "---------------------------------------------------" << endl;		
+			//cout << fragmentWord1 << "*" << fragmentWord2 << "*" << fragmentWord3 << endl;                                  <---- output matched selections                           
+			//cout << "---------------------------------------------------" << endl;		
 			return true;
 		}
 	} while(ptr != -1);
@@ -118,10 +118,22 @@ int strLen(string str)
 
 int strCmp(char s1[], char s2[])
 {
+	lowerCase(s1);
+	lowerCase(s2);
+	
 	for(int i = 0; s1[i] != '\0' or  s2[i] != '\0'; i++)
 	{
 		if (s1[i] != s2[i])
 			return s1[i] - s2[i];
 	}
 	return 0;
+}
+
+void lowerCase(char word[])
+{
+	for	(int i = 0; word[i] != '\0'; i++)
+	{
+		if (word[i] >= 98 and word[i] <= 122)
+			word[i] -= 32;
+	}
 }
