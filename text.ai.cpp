@@ -1,3 +1,6 @@
+/*
+функция очещиния строки от муосра кроме пробелов
+*/
 #include <iostream>
 #include <windows.h>
 #include <iomanip>
@@ -13,7 +16,7 @@ int getSelection(string text, char word1[], char word2[], char word3[], int ptr)
 int strLen(string str);
 int strCmp(char s1[], char s2[]);
 bool isMatch(string text, char fragmentWord1[], char fragmentWord2[], char fragmentWord3[]);
-void lowerCase(char word[]);
+void upperCase(char word[]);
 
 int main()
 {
@@ -45,7 +48,8 @@ double antiPlagiarism(string text, string fragment)
 		}
 		selection++;
 	} while(fragmentPtr != -1);
-	originality = matchSelection / selection * 100;
+	
+	originality = 100.0 - matchSelection / selection * 100;
 	return originality;
 }
 
@@ -87,8 +91,8 @@ bool isMatch(string text, char fragmentWord1[], char fragmentWord2[], char fragm
 	do{
 		ptr = getSelection(text, word1, word2, word3, ptr);
 		if(strCmp(word1, fragmentWord1) == 0 and strCmp(word2, fragmentWord2) == 0 and strCmp(word3, fragmentWord3) == 0){
-			//cout << fragmentWord1 << "*" << fragmentWord2 << "*" << fragmentWord3 << endl;                                  <---- output matched selections                           
-			//cout << "---------------------------------------------------" << endl;		
+			cout << fragmentWord1 << "*" << fragmentWord2 << "*" << fragmentWord3 << endl;                                                            
+			cout << "---------------------------------------------------" << endl;		
 			return true;
 		}
 	} while(ptr != -1);
@@ -118,8 +122,8 @@ int strLen(string str)
 
 int strCmp(char s1[], char s2[])
 {
-	lowerCase(s1);
-	lowerCase(s2);
+	upperCase(s1);
+	upperCase(s2);
 	
 	for(int i = 0; s1[i] != '\0' or  s2[i] != '\0'; i++)
 	{
@@ -129,11 +133,11 @@ int strCmp(char s1[], char s2[])
 	return 0;
 }
 
-void lowerCase(char word[])
+void upperCase(char word[])
 {
 	for	(int i = 0; word[i] != '\0'; i++)
 	{
-		if (word[i] >= 98 and word[i] <= 122)
+		if (word[i] >= 97 and word[i] <= 122)
 			word[i] -= 32;
 	}
 }
