@@ -1,143 +1,191 @@
-/*
-функция очещиния строки от муосра кроме пробелов
-*/
 #include <iostream>
-#include <windows.h>
-#include <iomanip>
+#include <stdlib.h>
+#include <cstring>
 using namespace std;
 
-char separator[] = "!, ?.-";
-const int N = 1024;
-
-bool isSeparator(char sym);
 double antiPlagiarism(string text, string fragment);
-int getWord(string text, char word[], int ptr);
-int getSelection(string text, char word1[], char word2[], char word3[], int ptr);
+int nextWordIndex(string text, int index);
+bool isSeparator(char symbol);
+int isMatchShingle(string text, string shingle);
+string getShingle(string fragment, int index);
+string lowerCase(string text);
+
+int getIndexOfNextWord(string fragment, int index);
+string getWord(string fragment, int index);
+string deleteWord(string text, int startIndex, int endIndex);
 int strLen(string str);
-int strCmp(char s1[], char s2[]);
-bool isMatch(string text, char fragmentWord1[], char fragmentWord2[], char fragmentWord3[]);
-void upperCase(char word[]);
 
 int main()
 {
-	string text = "Hello! Do you want to go for a walk with me? Yes. We can go to the luna-park. Take tickets to the ferris wheel, take a ride once. And we can buy cotton candy";
-	string fragment;
-	
-	cout << "Enter fragment: ";
-	getline(cin, fragment);
-	
-	cout << endl << "TEXT:" << endl;
+	string text = "Hello Do you want to go for a walk with me? Yes. We can go to the luna-park. Take tickets to the ferris wheel, take a ride once. And we can buy cotton candy";
+	string fragment = "Hello for you want to go for a walk";
 	cout << text << endl;
-	cout << "Originality: " << setprecision(4) << antiPlagiarism(text, fragment) << "%";
+	cout << deleteWord(fragment, 5, 9); // удалит из фрагмента for
+	//cout << antiPlagiarism(text, fragment);
+	return 0;
 }
 
-double antiPlagiarism(string text, string fragment)
+string deletePrepositions(string text)
 {
-	double originality = 0.0;
-	double selection = 0;
-	double matchSelection = 0;
-	int fragmentPtr = 0;
-	char fragmentWord1[N];
-	char fragmentWord2[N];
-	char fragmentWord3[N];
-	
-	do{
-		fragmentPtr = getSelection(fragment, fragmentWord1, fragmentWord2, fragmentWord3, fragmentPtr);
-		if(isMatch(text, fragmentWord1, fragmentWord2, fragmentWord3)){
-			matchSelection++;
+	string word;
+	int index = 0;
+	string prepositions[] = { "with", "without", "ago", "apart", "aside", "away", "hence", "notwithstanding", "onto",
+						  "through", "withal", "next", "beside", "under", "above", "across", "into", "towards",
+						  "from", "since", "for", "past", "till", "until", "along", "amid", "among", "around",
+						  "behind", "below", "beneath", "besides", "between", "but", "concerning", "considering",
+						  "despite", "down", "during", "following", "inside", "outside", "opposite", "regarding",
+						  "via", "versus", "underneath", "unlike", "under", "over", "regarding", "before" };
+
+	do {
+		word = getWord(text, index);
+		index = getIndexOfNextWord(text, index) + 1;
+		cout << word;
+		for (int i = 0; i < 52; i++)
+		{
+			/*if (word == prepositions[i]) {
+				delete
+			}*/
 		}
-		selection++;
-	} while(fragmentPtr != -1);
-	
-	originality = 100.0 - matchSelection / selection * 100;
-	return originality;
+	} while (word != "");
+
+	return text;
 }
 
-bool isSeparator(char sym)
+string getWord(string fragment, int index)
 {
-	for (int i = 0; separator[i] != '\0'; i++) {
-		if (separator[i] == sym)
-			return true;
-	}
-	return false;
-}
-
-int getWord(string text, char word[], int ptr)
-{
+	string word;
 	int i = 0;
-	int iw = 0;
-	
-	for (i = ptr; text[i] != '\0'; i++) {
-		if(!isSeparator(text[i])) {
-			word[iw] = text[i];
-			iw++;
-			if (isSeparator(text[i+1]) or text[i+1] == '\0') {
-				word[iw] = '\0';
-				i++;
+
+	for (i = index; fragment[i] != '\0'; i++) {
+		if (!isSeparator(fragment[i])) {
+			word += fragment[i];
+			if(isSeparator(fragment[i+1]) or fragment[i+1] == '\0') {
+				word += '\0';
 				break;
 			}
 		}
 	}
-	return i;
+	return word;
 }
 
-bool isMatch(string text, char fragmentWord1[], char fragmentWord2[], char fragmentWord3[])
+string deleteWord(string text, int startIndex, int endIndex)
 {
-	const int N = 1024;
-	char word1[N];
-	char word2[N];
-	char word3[N];
-	int ptr = 0;
-	do{
-		ptr = getSelection(text, word1, word2, word3, ptr);
-		if(strCmp(word1, fragmentWord1) == 0 and strCmp(word2, fragmentWord2) == 0 and strCmp(word3, fragmentWord3) == 0){
-			cout << fragmentWord1 << "*" << fragmentWord2 << "*" << fragmentWord3 << endl;                                                            
-			cout << "---------------------------------------------------" << endl;		
-			return true;
-		}
-	} while(ptr != -1);
-	
-	return false;
+	int i = 0;
+
+	while (endIndex != startIndex) {
+		for (i = startIndex; i < strLen(text); i++)
+			text[i] = text[i + 1];
+		endIndex--;
+		text[i - 1] = '\0';
+	}
+	return text;
 }
 
-int getSelection(string text, char w1[], char w2[], char w3[], int ptr)
+string lowerCase(string text)
 {
-	int newPtr = 0;
-	ptr = getWord(text, w1, ptr);
-	newPtr = ptr;
-	ptr = getWord(text, w2, ptr);
-	ptr = getWord(text, w3, ptr);
-	if (ptr == strLen(text))
-		return -1;
-	return newPtr;
+	for (int i = 0; text[i] != '\0'; i++) {
+		if (text[i] >= 65 and text[i] <= 90)
+			text[i] += 32;
+	}
+	return text;
 }
 
-int strLen(string str)
-{
+int strLen(string str) {
 	int i = 0;
 	for (i = 0; str[i] != '\0'; i++)
 		;
 	return i;
 }
 
-int strCmp(char s1[], char s2[])
+int getIndexOfNextWord(string fragment, int index)
 {
-	upperCase(s1);
-	upperCase(s2);
-	
-	for(int i = 0; s1[i] != '\0' or  s2[i] != '\0'; i++)
-	{
-		if (s1[i] != s2[i])
-			return s1[i] - s2[i];
-	}
-	return 0;
+	while (!isSeparator(fragment[index]))
+		index++;
+	return index;
 }
 
-void upperCase(char word[])
-{
-	for	(int i = 0; word[i] != '\0'; i++)
-	{
-		if (word[i] >= 97 and word[i] <= 122)
-			word[i] -= 32;
+double antiPlagiarism(string text, string fragment) {
+	double matchSelections = 0;
+	double allSelections = 0;
+	double persent = 0.0;
+	int index = 0;
+	string shingle;
+
+	text = lowerCase(text);
+	fragment = lowerCase(fragment);
+	fragment = deletePrepositions(fragment);
+	while (index >= 0) {
+		shingle = getShingle(fragment, index);
+		if (shingle != "0") {
+			matchSelections += isMatchShingle(text, shingle);
+			allSelections++;
+			index = nextWordIndex(fragment, index);
+		}
+		else break;
 	}
+
+	persent = matchSelections / allSelections;
+	return persent * 100;
+}
+
+string getShingle(string fragment, int index) {
+	const int SHINGLE_SIZE = 3;
+	int size = 0;
+	int i = 0;
+	string shingle;
+	for (i = index; size < SHINGLE_SIZE; i++) {
+		if (fragment[i] == '\0') {
+			shingle += '\0';
+			size++;
+			break;
+		}
+
+		if ((isSeparator(fragment[i]) and !isSeparator(fragment[i + 1]))) {
+			size++;
+		}
+		shingle += fragment[i];
+
+	}
+	if (size < SHINGLE_SIZE) {
+		return "0";
+	}
+	return shingle;
+}
+
+int isMatchShingle(string text, string shingle) {
+	int index = 0;
+
+	while (true) {
+		bool notMatch = false;
+		for (int is = 0; shingle[is] != '\0'; is++) {
+			if (shingle[is] != text[index]) {
+				notMatch = true;
+				break;
+			}
+			index++;
+		}
+		index = nextWordIndex(text, index);
+		if (notMatch and index < 0) {
+			return 0;
+		}
+		else if (!notMatch) return 1;
+	}
+}
+
+int nextWordIndex(string text, int index) {
+	for (int i = index; text[i] != '\0'; i++) {
+		if (isSeparator(text[i]) and !isSeparator(text[i + 1]) and text[i + 1])
+			return i + 1;
+	}
+	return -1;
+}
+
+bool isSeparator(char symbol) {
+	char separator[] = " {,;.!-?:&_%$@^<>()”[]\\*`~+|{}#}";
+
+	for (int i = 0; separator[i] != '\0'; i++) {
+		if (separator[i] == symbol)
+			return true;
+	}
+	return false;
 }
