@@ -15,15 +15,17 @@ string getWord(string fragment, int index);
 string deleteWord(string text, int startIndex, int endIndex);
 int strLen(string str);
 string removeDuplicateWords(string text);
+string removeSmallWords(string text);
 
 int main()
 {
 	string text = "Hello Do you want to go for a walk with me? Yes. We can go to the luna-park. Take tickets to the ferris wheel, take a ride once. And we can buy cotton candy";
-	string fragment = "man hello without hello";
+	string fragment = "i man hello hello am i hello go to you to";
  
 	text = lowerCase(text);
 	text = deletePrepositions(text);
 	fragment = lowerCase(fragment);
+	fragment = removeSmallWords(fragment);
 	fragment = deletePrepositions(fragment);
 
 	fragment = removeDuplicateWords(fragment);
@@ -33,6 +35,30 @@ int main()
 	return 0;
 }
 
+string removeSmallWords(string text) 
+{
+	string word;
+	int endIndex = 0;
+	int startIndex = 0;
+
+	do {
+		word = getWord(text, endIndex);
+		if (endIndex >= strLen(text))
+			break;
+		endIndex = nextWordIndex(text, endIndex);
+		//cout << word << endl;
+		for (int i = 0; i < 52; i++)
+		{
+			if (strLen(word) <= 2) {
+				text = deleteWord(text, startIndex, endIndex);
+				endIndex = startIndex;
+			}
+		}
+		startIndex = endIndex;
+	} while (endIndex != -1);
+
+	return text;
+}
 string removeDuplicateWords(string text)
 {
 	string word1;
@@ -59,7 +85,7 @@ string removeDuplicateWords(string text)
 	} while (endIndex != -1);
 	return text;
 }
-string deletePrepositions(string text) // удаляет предлоги
+string deletePrepositions(string text) // ??????? ????????
 {
 	string word;
 	int endIndex = 0;
