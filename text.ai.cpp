@@ -10,27 +10,60 @@ int isMatchShingle(string text, string shingle);
 string getShingle(string fragment, int index);
 string lowerCase(string text);
 
-int getIndexOfNextWord(string fragment, int index);
+string deletePrepositions(string text);
 string getWord(string fragment, int index);
 string deleteWord(string text, int startIndex, int endIndex);
 int strLen(string str);
+string removeDuplicateWords(string text);
 
 int main()
 {
-	unsigned char ch = 'я';
-    std::cout << static_cast<int>(ch);
-	//string text = "Hello Do you want to go for a walk with me? Yes. We can go to the luna-park. Take tickets to the ferris wheel, take a ride once. And we can buy cotton candy";
-	//string fragment = "Hello for you want to go for a walk";
-	//cout << text << endl;
-	//cout << deleteWord(fragment, 5, 9); // удалит из фрагмента for
-	//cout << antiPlagiarism(text, fragment);
+	string text = "Hello Do you want to go for a walk with me? Yes. We can go to the luna-park. Take tickets to the ferris wheel, take a ride once. And we can buy cotton candy";
+	string fragment = "man hello without hello";
+ 
+	text = lowerCase(text);
+	text = deletePrepositions(text);
+	fragment = lowerCase(fragment);
+	fragment = deletePrepositions(fragment);
+
+	fragment = removeDuplicateWords(fragment);
+	cout << text << endl;
+	cout << fragment << endl;
+	cout << antiPlagiarism(text, fragment);
 	return 0;
 }
 
-string deletePrepositions(string text)
+string removeDuplicateWords(string text)
+{
+	string word1;
+	string word2;
+	int startIndex = 0;
+	int startIndex2 = 0;
+	int endIndex = 0;
+	do {
+		word1 = getWord(text, startIndex2);
+		startIndex2 = nextWordIndex(text, startIndex2);
+		word2 = getWord(text, startIndex2);
+		endIndex = nextWordIndex(text, endIndex);
+
+		//cout << "========" << endl << word1 << " - " << word2 << endl;
+		
+		if (word1 == word2) {
+			text = deleteWord(text, startIndex2, endIndex);
+			if (endIndex == -1)
+				break;
+			endIndex = startIndex2;
+			startIndex2 = startIndex;
+		}
+		startIndex = startIndex2;
+	} while (endIndex != -1);
+	return text;
+}
+string deletePrepositions(string text) // удаляет предлоги
 {
 	string word;
-	int index = 0;
+	int endIndex = 0;
+	int startIndex = 0;
 	string prepositions[] = { "with", "without", "ago", "apart", "aside", "away", "hence", "notwithstanding", "onto",
 						  "through", "withal", "next", "beside", "under", "above", "across", "into", "towards",
 						  "from", "since", "for", "past", "till", "until", "along", "amid", "among", "around",
@@ -39,16 +72,20 @@ string deletePrepositions(string text)
 						  "via", "versus", "underneath", "unlike", "under", "over", "regarding", "before" };
 
 	do {
-		word = getWord(text, index);
-		index = getIndexOfNextWord(text, index) + 1;
-		cout << word;
+		word = getWord(text, endIndex);
+		if (endIndex >= strLen(text))
+			break;
+		endIndex = nextWordIndex(text, endIndex);
+		//cout << word << endl;
 		for (int i = 0; i < 52; i++)
 		{
-			/*if (word == prepositions[i]) {
-				delete
-			}*/
+			if (word == prepositions[i]) {
+				text = deleteWord(text, startIndex, endIndex);
+				endIndex = startIndex;
+			}
 		}
-	} while (word != "");
+		startIndex = endIndex;
+	} while (endIndex != -1);
 
 	return text;
 }
@@ -62,7 +99,7 @@ string getWord(string fragment, int index)
 		if (!isSeparator(fragment[i])) {
 			word += fragment[i];
 			if(isSeparator(fragment[i+1]) or fragment[i+1] == '\0') {
-				word += '\0';
+				//word += '\0';
 				break;
 			}
 		}
@@ -73,7 +110,8 @@ string getWord(string fragment, int index)
 string deleteWord(string text, int startIndex, int endIndex)
 {
 	int i = 0;
-
+	if (endIndex == -1)
+		endIndex = strLen(text);
 	while (endIndex != startIndex) {
 		for (i = startIndex; i < strLen(text); i++)
 			text[i] = text[i + 1];
@@ -97,13 +135,6 @@ int strLen(string str) {
 	for (i = 0; str[i] != '\0'; i++)
 		;
 	return i;
-}
-
-int getIndexOfNextWord(string fragment, int index)
-{
-	while (!isSeparator(fragment[index]))
-		index++;
-	return index;
 }
 
 double antiPlagiarism(string text, string fragment) {
