@@ -17,10 +17,12 @@ int strLen(string str);
 
 int main()
 {
-	string text = "Hello Do you want to go for a walk with me? Yes. We can go to the luna-park. Take tickets to the ferris wheel, take a ride once. And we can buy cotton candy";
-	string fragment = "Hello for you want to go for a walk";
-	cout << text << endl;
-	cout << deleteWord(fragment, 5, 9); // удалит из фрагмента for
+	unsigned char ch = 'я';
+    std::cout << static_cast<int>(ch);
+	//string text = "Hello Do you want to go for a walk with me? Yes. We can go to the luna-park. Take tickets to the ferris wheel, take a ride once. And we can buy cotton candy";
+	//string fragment = "Hello for you want to go for a walk";
+	//cout << text << endl;
+	//cout << deleteWord(fragment, 5, 9); // удалит из фрагмента for
 	//cout << antiPlagiarism(text, fragment);
 	return 0;
 }
