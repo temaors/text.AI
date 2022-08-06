@@ -8,8 +8,10 @@ int nextWordIndex(string text, int index);
 bool isSeparator(char symbol);
 int isMatchShingle(string text, string shingle);
 string getShingle(string fragment, int index);
-string lowerCase(string text);
+string deleteGarbage(string text);
+string formatText(string text);
 
+string lowerCase(string text);
 string deletePrepositions(string text);
 string getWord(string fragment, int index);
 string deleteWord(string text, int startIndex, int endIndex);
@@ -20,19 +22,40 @@ string removeSmallWords(string text);
 int main()
 {
 	string text = "Hello Do you want to go for a walk with me? Yes. We can go to the luna-park. Take tickets to the ferris wheel, take a ride once. And we can buy cotton candy";
-	string fragment = "i man hello hello am i hello go to you to";
- 
-	text = lowerCase(text);
-	text = deletePrepositions(text);
-	fragment = lowerCase(fragment);
-	fragment = removeSmallWords(fragment);
-	fragment = deletePrepositions(fragment);
-
-	fragment = removeDuplicateWords(fragment);
+	string fragment = "Hello Hello hello Do &&&you want to";
+	
+ 	cout << "Sourse text" << endl;
+ 	cout << "----------------" << endl;
 	cout << text << endl;
+	cout << endl;
+	cout << "Checked fragment" << endl;
+ 	cout << "----------------" << endl;
 	cout << fragment << endl;
-	cout << antiPlagiarism(text, fragment);
+	/*
+	text = formatText(text);
+	fragment = formatText(fragment);
+	cout << endl;
+	cout << "Clean sourse text" << endl;
+ 	cout << "----------------" << endl;
+	cout << text << endl;
+	cout << endl;
+	cout << "Clean checked fragment" << endl;
+ 	cout << "----------------" << endl;
+	cout << fragment << endl;
+	*/
+	cout << endl;
+	cout << "Uniqueness is " << antiPlagiarism(text, fragment) << "%";	
+	
 	return 0;
+}
+
+string formatText(string text) {
+	text = deleteGarbage(text);
+	text = lowerCase(text);
+	text = removeSmallWords(text);
+	text = deletePrepositions(text);
+	text = removeDuplicateWords(text);
+	return text;
 }
 
 string removeSmallWords(string text) 
@@ -170,9 +193,8 @@ double antiPlagiarism(string text, string fragment) {
 	int index = 0;
 	string shingle;
 
-	text = lowerCase(text);
-	fragment = lowerCase(fragment);
-	fragment = deletePrepositions(fragment);
+	text = formatText(text);
+	fragment = formatText(fragment);
 	while (index >= 0) {
 		shingle = getShingle(fragment, index);
 		if (shingle != "0") {
@@ -183,7 +205,7 @@ double antiPlagiarism(string text, string fragment) {
 		else break;
 	}
 
-	persent = matchSelections / allSelections;
+	persent = 100 - (matchSelections / allSelections) * 100;
 	return persent * 100;
 }
 
@@ -247,4 +269,20 @@ bool isSeparator(char symbol) {
 			return true;
 	}
 	return false;
+}
+
+string deleteGarbage(string text) {
+	string cleanText;
+	bool space = false;
+	for (int i = 0; text[i] != '\0'; i++) {
+		if ((int)text[i] >= 65 and (int)text[i] <= 90 or
+			(int)text[i] >= 97 and (int)text[i] <= 122) {
+				cleanText += text[i];
+				space = false;
+			} else if (!space and strLen(cleanText)) {
+					cleanText += " ";
+					space = true;
+			}
+	}
+	return cleanText;
 }
